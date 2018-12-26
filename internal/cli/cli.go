@@ -16,20 +16,25 @@ func getDomain() string {
 	return domain
 }
 
-func GetSecrets() (string, string) {
+func getMasterPassword() string {
 	var master_password string
-	var domain string
-
-	domain = getDomain()
 	fmt.Println("Enter master password: ")
-
 	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		fmt.Printf("Failed to read password: %v", err)
 	}
 	master_password = string(bytePassword)
 	fmt.Println()
+	return master_password
+}
 
+func GetSecrets() (string, string) {
+	var master_password string
+	var domain string
+
+	domain = getDomain()
+	master_password = getMasterPassword()
+	
 	return master_password, domain
 
 }
