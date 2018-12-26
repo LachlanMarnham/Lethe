@@ -3,18 +3,25 @@ package cli
 import (
 	"bufio"
 	"fmt"
+	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"syscall"
-	"golang.org/x/crypto/ssh/terminal"
 )
+
+func getDomain() string {
+	reader := bufio.NewReader(os.Stdin)
+	var domain string
+	fmt.Println("Enter domain:")
+	domain, _ = reader.ReadString('\n')
+	return domain
+}
 
 func GetSecrets() (string, string) {
 	var master_password string
 	var domain string
-	reader := bufio.NewReader(os.Stdin)
-	
-	fmt.Println("Enter domain: ")
-	domain, _ = reader.ReadString('\n')
+
+	domain = getDomain()
+	fmt.Println("Enter master password: ")
 
 	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
