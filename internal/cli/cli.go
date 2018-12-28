@@ -5,26 +5,45 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
+	"strings"
 	"syscall"
 )
 
 func getDomain() string {
-	reader := bufio.NewReader(os.Stdin)
-	var domain string
+	var (
+		reader *bufio.Reader
+		domain string
+		err error
+	)
+	reader = bufio.NewReader(os.Stdin)
+
 	fmt.Println("Enter domain:")
-	domain, _ = reader.ReadString('\n')
+	domain, err = reader.ReadString('\n')
+	if err != nil {
+		fmt.Printf("Failed to read domain: %v", err)
+	}
+	domain = strings.Trim(domain, "\n")
+	
 	return domain
 }
 
 func getMasterPassword() string {
-	var master_password string
-	fmt.Println("Enter master password: ")
-	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
+	var (
+		byte_password []uint8
+		err error
+		master_password string
+	)
+
+	fmt.Println("Enter master password:")
+	byte_password, err = terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
-		fmt.Printf("Failed to read password: %v", err)
+		fmt.Printf("Failed to read master password: %v", err)
 	}
-	master_password = string(bytePassword)
+	
+	master_password = string(byte_password)
+	// Add a new line here to make the UI consistent with getDomain()
 	fmt.Println()
+
 	return master_password
 }
 
@@ -34,7 +53,7 @@ func GetSecrets() (string, string) {
 
 	domain = getDomain()
 	master_password = getMasterPassword()
-	
+
 	return master_password, domain
 
 }
