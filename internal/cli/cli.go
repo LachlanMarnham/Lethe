@@ -13,7 +13,7 @@ func getDomain() string {
 	var (
 		reader *bufio.Reader
 		domain string
-		err error
+		err    error
 	)
 	reader = bufio.NewReader(os.Stdin)
 
@@ -23,14 +23,14 @@ func getDomain() string {
 		fmt.Printf("Failed to read domain: %v", err)
 	}
 	domain = strings.Trim(domain, "\n")
-	
+
 	return domain
 }
 
 func getMasterPassword() string {
 	var (
-		byte_password []uint8
-		err error
+		byte_password   []uint8
+		err             error
 		master_password string
 	)
 
@@ -39,7 +39,7 @@ func getMasterPassword() string {
 	if err != nil {
 		fmt.Printf("Failed to read master password: %v", err)
 	}
-	
+
 	master_password = string(byte_password)
 	// Add a new line here to make the UI consistent with getDomain()
 	fmt.Println()
