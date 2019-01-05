@@ -73,16 +73,37 @@ type valid_input_parametrization struct {
 
 func TestValidateDomain(t *testing.T) {
 	parametrizations := []valid_input_parametrization{
-		valid_input_parametrization{"", false},
-		valid_input_parametrization{"a", true},
-		valid_input_parametrization{"2", true},
-		valid_input_parametrization{"!", true},
+		valid_input_parametrization{"", false}, // Too short
+		valid_input_parametrization{"a", true}, // Valid
+		valid_input_parametrization{"2", true}, // Valid
+		valid_input_parametrization{"!", true}, // Valid
 	}
 
 	for _, test_case := range parametrizations {
 		if test_case.is_valid != validateDomain(test_case.input) {
 			t.Errorf(
 				"Unexpected result. Domain: %v. Expected validity: %v.",
+				test_case.input,
+				test_case.is_valid,
+			)
+		}
+	}
+}
+
+func TestValidateMasterPassword(t *testing.T) {
+	parametrizations := []valid_input_parametrization{
+		valid_input_parametrization{"asdf", false},         // Must be at least 8 characters
+		valid_input_parametrization{"mypassword1£", false}, // Must contain upper case
+		valid_input_parametrization{"MYPASSWORD1£", false}, // Must contain lower case
+		valid_input_parametrization{"Mypassword£", false},  // Must contain lower case a number
+		valid_input_parametrization{"Mypassword1", false},  // Must contain a symbol
+		valid_input_parametrization{"Mypassword1£", true},  // Valid
+	}
+
+	for _, test_case := range parametrizations {
+		if test_case.is_valid != validateMasterPassword(test_case.input) {
+			t.Errorf(
+				"Unexpected result. Password: %v. Expected validity: %v.",
 				test_case.input,
 				test_case.is_valid,
 			)
