@@ -47,12 +47,36 @@ func getMasterPassword() string {
 	return master_password
 }
 
-func GetSecrets() (string, string) {
-	var master_password string
-	var domain string
+func validateDomain(domain string) bool {
+	switch {
+	case len(domain) < 1:
+		fmt.Println("Domain needs to be at least one character long.")
+		return false
+	default:
+		return true
+	}
+}
 
-	domain = getDomain()
-	master_password = getMasterPassword()
+func validateMasterPassword(master_password string) bool {
+	return true
+}
+
+func GetSecrets() (string, string) {
+	var (
+		master_password       string
+		domain                string
+		domain_valid          bool = false
+		master_password_valid bool = false
+	)
+
+	for !domain_valid {
+		domain = getDomain()
+		domain_valid = validateDomain(domain)
+	}
+	for !master_password_valid {
+		master_password = getMasterPassword()
+		master_password_valid = validateMasterPassword(master_password)
+	}
 
 	return master_password, domain
 
