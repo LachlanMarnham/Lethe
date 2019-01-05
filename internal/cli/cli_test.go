@@ -65,3 +65,27 @@ func TestGetDomain(t *testing.T) {
 		}
 	}
 }
+
+type valid_input_parametrization struct {
+	input    string
+	is_valid bool
+}
+
+func TestValidateDomain(t *testing.T) {
+	parametrizations := []valid_input_parametrization{
+		valid_input_parametrization{"", false},
+		valid_input_parametrization{"a", true},
+		valid_input_parametrization{"2", true},
+		valid_input_parametrization{"!", true},
+	}
+
+	for _, test_case := range parametrizations {
+		if test_case.is_valid != validateDomain(test_case.input) {
+			t.Errorf(
+				"Unexpected result. Domain: %v. Expected validity: %v.",
+				test_case.input,
+				test_case.is_valid,
+			)
+		}
+	}
+}
