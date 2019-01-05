@@ -9,6 +9,17 @@ import (
 	"syscall"
 )
 
+const (
+	numbers                    string = "0123456789"
+	lowercase                  string = "abcdefghijklmnopqrstuvwxyz"
+	min_domain_length          int    = 1
+	min_master_password_length int    = 8
+)
+
+var (
+	uppercase string = strings.ToUpper(lowercase)
+)
+
 func getDomain() string {
 	var (
 		reader *bufio.Reader
@@ -47,18 +58,73 @@ func getMasterPassword() string {
 	return master_password
 }
 
+// validateDomain checks to make sure the user has entered a domain which is at
+// least one character long. The domain is not expected to be, e.g., a fqdn, but rather
+// a kind of context, which is easy to remember for the user.
 func validateDomain(domain string) bool {
 	switch {
-	case len(domain) < 1:
-		fmt.Println("Domain needs to be at least one character long.")
+	case len(domain) < min_domain_length:
+		fmt.Printf(
+			"Domain needs to be at least %d character long.\n",
+			min_domain_length,
+		)
 		return false
 	default:
 		return true
 	}
 }
 
+// containsSymbol checks whether the input string contains at least one symbol.
+// By 'symbol' here, we mean it contains at least one character which is not a
+// number, not a lowercase letter and not an uppercase letter. This is really
+// not general because, e.g., caseable non-latin letters will be considered 'symbols'
+// here but who cares? If the user is using characters exterior to the ascii subset
+// it has the same effect on password entropy.
+func containsSymbol(target string) bool {
+	var (
+		non_symbol_characters string = lowercase + uppercase + numbers
+		non_symbol_count      int    = 0
+	)
+
+	for _, character := range non_symbol_characters {
+		non_symbol_count += strings.Count(target, string(character))
+	}
+
+	if non_symbol_count < len(target) {
+		return true
+	} else {
+		return false
+	}
+}
+
+// validateMasterPassword checks to make sure the user is entering a strong-enough
+// master password. Will return false if the password has length less than
+// min_master_password_length, no lowercase characters, no uppercase characters or
+// no numbers. Else, returns true.
 func validateMasterPassword(master_password string) bool {
-	return true
+	switch {
+	case len(master_password) < min_master_password_length:
+		fmt.Printf(
+			"Master password needs to be at least %d characters long.\n",
+			min_master_password_length,
+		)
+		return false
+	case !strings.ContainsAny(master_password, lowercase):
+		fmt.Println("Master password must contain at least one lowercase letter.")
+		return false
+	case !strings.ContainsAny(master_password, uppercase):
+		fmt.Println("Master password must contain at least one uppercase letter.")
+		return false
+	case !strings.ContainsAny(master_password, numbers):
+		fmt.Println("Master password must contain at least one number.")
+		return false
+	case !containsSymbol(master_password):
+		fmt.Println("Master password must contain at least one symbol.")
+		return false
+	default:
+		return true
+
+	}
 }
 
 func GetSecrets() (string, string) {
